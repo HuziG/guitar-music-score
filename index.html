@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body{
+      scroll-behavior: smooth;
+    }
+    #app {
+      text-align: center;
+    }
+    .center-img-item{
+      width: 60%;
+    }
+    #start-button{
+      position: fixed;
+      top: 20px;
+      left: 20px;
+    }
+    #stop-button{
+      position: fixed;
+      top: 20px;
+      right: 20px;
+    }
+    #reset-button{
+      position: fixed;
+      top: 140px;
+      left: 20px;
+    }
+    #step-button{
+      position: fixed;
+      top: 80px;
+      left: 20px;
+    }
+    #count-down-wrapper{
+      z-index: 999;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 300px;
+      line-height: 300px;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 8rem;
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <button id="start-button" v-on:click="startCountDown">开始</button>
+    <button id="stop-button" v-on:click="handleStop">重置</button>
+    <button id="reset-button" v-on:click="handleResetStep">重置速度</button>
+    
+    <div id="step-button">
+      {{new Number(step).toFixed(1)}} : 
+      <button v-on:click="handleAddStep">+</button>
+      <button v-on:click="handleReduceStep">-</button>
+    </div>
+
+    <div id="count-down-wrapper" v-if="countDown > 0">
+      {{ countDown }}
+    </div>
+
+    <img v-for="item in imgsList" v-bind:src="item" alt="error" class="center-img-item">
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        interval: null,
+        imgsList: [
+          './imgs/图片1.png',
+          './imgs/图片2.png',
+        ],
+        step: 1.3,
+        countDown: 0,
+        countDownInterval: null
+      },
+      mounted() {
+        // this.startCountDown()
+        document.documentElement.scrollTop = 0
+      },
+      methods: {
+        startAutoScroll() {
+          this.interval = setInterval(() => {
+            let topDistance = document.documentElement.scrollTop;
+            topDistance += this.step
+            document.documentElement.scrollTop = topDistance
+          }, 50)
+        },
+
+        startCountDown() {
+          clearInterval(this.countDownInterval)
+          this.countDown = 5
+
+          this.countDownInterval = setInterval(() => {
+            this.countDown = this.countDown -= 1
+
+            if (this.countDown === 0) {
+              this.startAutoScroll()
+            }
+          }, 1000)
+        },
+
+        handleStop() {
+          clearInterval(this.interval)
+          document.documentElement.scrollTop = 0
+        },
+
+        handleAddStep() {
+          this.step += 0.1
+        },
+
+        handleReduceStep() {
+          this.step -= 0.1
+        },
+
+        handleResetStep() {
+          this.step = 1.3
+        }
+      }
+    })
+  </script>
+</body>
+</html>
